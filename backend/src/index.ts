@@ -19,8 +19,8 @@ async function startServer() {
     app.set("io", io);
     console.log(`[Socket.io] Real-time engine attached`);
 
-    // Start listening
-    server.listen(config.port, () => {
+    // Start listening on process.env.PORT
+    server.listen(config.port, "0.0.0.0", () => {
       console.log(`[Server] Chat backend listening on http://localhost:${config.port}`);
       console.log(`[Server] Allowed client origin: ${config.clientOrigin}`);
     });

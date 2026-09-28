@@ -171,9 +171,9 @@ Follow these exact steps to deploy and complete the project delivery:
 3. Connect your GitHub repository. Render will automatically parse [render.yaml](file:///Users/devpatel/Projects/chat-app/render.yaml).
 4. Review the environment variables:
    - `NODE_ENV`: `production`
-   - `PORT`: `10000`
+   - `PORT`: `4000`
    - `CLIENT_ORIGIN`: `*` (or your frontend domain once deployed)
-   - `DB_PATH`: `/var/data/chat.db`
+   - `DB_PATH`: `./data/chat.db`
 5. Click **Apply**. Once built, copy your backend URL (e.g. `https://chat-app-backend.onrender.com`).
 
 ### Step 3: Deploy Frontend on Vercel or Netlify
