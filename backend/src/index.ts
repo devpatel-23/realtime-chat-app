@@ -1,8 +1,8 @@
-import { createServer } from 'node:http';
-import { createApp } from './app.js';
-import { config } from './config/index.js';
-import { closeDatabase, getDatabase } from './db/index.js';
-import { initSocketServer } from './sockets/index.js';
+import { createServer } from "node:http";
+import { createApp } from "./app.js";
+import { config } from "./config/index.js";
+import { closeDatabase, getDatabase } from "./db/index.js";
+import { initSocketServer } from "./sockets/index.js";
 
 async function startServer() {
   try {
@@ -16,7 +16,7 @@ async function startServer() {
 
     // Initialize Socket.io
     const io = initSocketServer(server, config.clientOrigin);
-    app.set('io', io);
+    app.set("io", io);
     console.log(`[Socket.io] Real-time engine attached`);
 
     // Start listening
@@ -27,18 +27,18 @@ async function startServer() {
 
     // Graceful shutdown
     const shutdown = () => {
-      console.log('\n[Server] Shutting down gracefully...');
+      console.log("\n[Server] Shutting down gracefully...");
       server.close(() => {
         closeDatabase();
-        console.log('[Server] Database closed and server terminated');
+        console.log("[Server] Database closed and server terminated");
         process.exit(0);
       });
     };
 
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
+    process.on("SIGINT", shutdown);
+    process.on("SIGTERM", shutdown);
   } catch (error) {
-    console.error('[Server] Fatal error on startup:', error);
+    console.error("[Server] Fatal error on startup:", error);
     process.exit(1);
   }
 }

@@ -1,6 +1,6 @@
-import React from 'react';
-import { AlertTriangle, RefreshCw, WifiOff } from 'lucide-react';
-import type { ConnectionStatus } from '../types';
+import React from "react";
+import { AlertTriangle, RefreshCw, WifiOff } from "lucide-react";
+import type { ConnectionStatus } from "../types";
 
 interface ConnectionBannerProps {
   status: ConnectionStatus;
@@ -8,17 +8,17 @@ interface ConnectionBannerProps {
 }
 
 export const ConnectionBanner: React.FC<ConnectionBannerProps> = ({ status, onReconnect }) => {
-  if (status === 'connected') return null;
+  if (status === "connected") return null;
 
-  const isReconnecting = status === 'reconnecting' || status === 'connecting';
+  const isReconnecting = status === "reconnecting" || status === "connecting";
 
   return (
     <div
       role="alert"
       className={`w-full px-4 py-2 flex items-center justify-between text-xs sm:text-sm font-medium transition-colors ${
         isReconnecting
-          ? 'bg-amber-500/15 border-b border-amber-500/30 text-amber-300'
-          : 'bg-red-500/15 border-b border-red-500/30 text-red-300'
+          ? "bg-amber-500/15 border-b border-amber-500/30 text-amber-300"
+          : "bg-red-500/15 border-b border-red-500/30 text-red-300"
       }`}
     >
       <div className="flex items-center gap-2">
@@ -29,8 +29,8 @@ export const ConnectionBanner: React.FC<ConnectionBannerProps> = ({ status, onRe
         )}
         <span>
           {isReconnecting
-            ? 'Connection lost. Auto-reconnecting to chat server...'
-            : 'Disconnected from server. Check your network connection.'}
+            ? "Connection lost. Auto-reconnecting to chat server..."
+            : "Disconnected from server. Check your network connection."}
         </span>
       </div>
 

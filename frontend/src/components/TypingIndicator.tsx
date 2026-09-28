@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TypingIndicatorProps {
   typingUsers: string[];
@@ -11,8 +11,8 @@ export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ typingUsers })
     typingUsers.length === 1
       ? `${typingUsers[0]} is typing...`
       : typingUsers.length === 2
-      ? `${typingUsers[0]} and ${typingUsers[1]} are typing...`
-      : `${typingUsers[0]} and ${typingUsers.length - 1} others are typing...`;
+        ? `${typingUsers[0]} and ${typingUsers[1]} are typing...`
+        : `${typingUsers[0]} and ${typingUsers.length - 1} others are typing...`;
 
   return (
     <div className="flex items-center gap-2 px-4 py-2 text-xs text-slate-400 animate-fade-in">

@@ -7,7 +7,10 @@ export class PresenceService {
    * Registers a socket connection for a username.
    * Multi-tab safe: tracks connection count per username.
    */
-  public addConnection(username: string, socketId: string): { isFirstConnection: boolean; onlineUsers: string[] } {
+  public addConnection(
+    username: string,
+    socketId: string
+  ): { isFirstConnection: boolean; onlineUsers: string[] } {
     this.socketToUser.set(socketId, username);
 
     let sockets = this.userSockets.get(username);
@@ -23,7 +26,7 @@ export class PresenceService {
 
     return {
       isFirstConnection,
-      onlineUsers: this.getOnlineUsers()
+      onlineUsers: this.getOnlineUsers(),
     };
   }
 
@@ -42,7 +45,7 @@ export class PresenceService {
         username: null,
         isLastConnection: false,
         onlineUsers: this.getOnlineUsers(),
-        stoppedTyping: false
+        stoppedTyping: false,
       };
     }
 
@@ -67,7 +70,7 @@ export class PresenceService {
       username,
       isLastConnection,
       onlineUsers: this.getOnlineUsers(),
-      stoppedTyping
+      stoppedTyping,
     };
   }
 

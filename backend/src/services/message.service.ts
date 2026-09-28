@@ -1,7 +1,13 @@
-import crypto from 'crypto';
-import { IMessageRepository, Message, MessageStatus, SQLiteMessageRepository, FindMessagesOptions } from '../repositories/message.repository.js';
-import { validateMessageText, validateUsername } from '../utils/sanitize.js';
-import { AppError } from '../utils/response.js';
+import crypto from "crypto";
+import {
+  IMessageRepository,
+  Message,
+  MessageStatus,
+  SQLiteMessageRepository,
+  FindMessagesOptions,
+} from "../repositories/message.repository.js";
+import { validateMessageText, validateUsername } from "../utils/sanitize.js";
+import { AppError } from "../utils/response.js";
 
 export class MessageService {
   private repository: IMessageRepository;
@@ -17,13 +23,13 @@ export class MessageService {
     try {
       validUsername = validateUsername(username);
     } catch (err: any) {
-      throw new AppError(err.message || 'Invalid username', 400);
+      throw new AppError(err.message || "Invalid username", 400);
     }
 
     try {
       validText = validateMessageText(text);
     } catch (err: any) {
-      throw new AppError(err.message || 'Invalid message text', 400);
+      throw new AppError(err.message || "Invalid message text", 400);
     }
 
     const message: Message = {
@@ -31,7 +37,7 @@ export class MessageService {
       username: validUsername,
       text: validText,
       createdAt: new Date().toISOString(),
-      status: 'sent'
+      status: "sent",
     };
 
     return this.repository.create(message);
@@ -46,18 +52,18 @@ export class MessageService {
   }
 
   public updateStatus(id: string, status: MessageStatus): Message | null {
-    if (!['sent', 'delivered', 'read'].includes(status)) {
-      throw new AppError('Invalid status value', 400);
+    if (!["sent", "delivered", "read"].includes(status)) {
+      throw new AppError("Invalid status value", 400);
     }
     return this.repository.updateStatus(id, status);
   }
 
   public markDelivered(ids: string[]): number {
-    return this.repository.updateStatusBulk(ids, 'delivered');
+    return this.repository.updateStatusBulk(ids, "delivered");
   }
 
   public markRead(ids: string[]): number {
-    return this.repository.updateStatusBulk(ids, 'read');
+    return this.repository.updateStatusBulk(ids, "read");
   }
 }
 

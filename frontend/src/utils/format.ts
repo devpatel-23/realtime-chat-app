@@ -5,16 +5,16 @@ export function formatTime(isoString: string): string {
   try {
     const date = new Date(isoString);
     if (isNaN(date.getTime())) {
-      return '';
+      return "";
     }
 
     return date.toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit',
+      hour: "numeric",
+      minute: "2-digit",
       hour12: true,
     });
   } catch {
-    return '';
+    return "";
   }
 }
 
@@ -24,16 +24,16 @@ export const formatTimestamp = formatTime;
  * Returns consistent deterministic background color for an avatar based on username
  */
 const AVATAR_COLORS = [
-  'bg-emerald-600 text-white',
-  'bg-blue-600 text-white',
-  'bg-indigo-600 text-white',
-  'bg-violet-600 text-white',
-  'bg-purple-600 text-white',
-  'bg-pink-600 text-white',
-  'bg-rose-600 text-white',
-  'bg-amber-600 text-white',
-  'bg-teal-600 text-white',
-  'bg-cyan-600 text-white',
+  "bg-emerald-600 text-white",
+  "bg-blue-600 text-white",
+  "bg-indigo-600 text-white",
+  "bg-violet-600 text-white",
+  "bg-purple-600 text-white",
+  "bg-pink-600 text-white",
+  "bg-rose-600 text-white",
+  "bg-amber-600 text-white",
+  "bg-teal-600 text-white",
+  "bg-cyan-600 text-white",
 ];
 
 export function getAvatarColor(username: string): string {
@@ -50,7 +50,7 @@ export function getAvatarColor(username: string): string {
  * Gets 1-2 character initials for display in an avatar
  */
 export function getInitials(username: string): string {
-  if (!username) return '?';
+  if (!username) return "?";
   const parts = username.trim().split(/[\s_-]+/);
   if (parts.length >= 2 && parts[0] && parts[1]) {
     return (parts[0][0] + parts[1][0]).toUpperCase();
@@ -62,7 +62,7 @@ export function getInitials(username: string): string {
  * Decodes HTML entities for safe display
  */
 export function decodeHtml(html: string): string {
-  if (!html) return '';
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  return doc.body.textContent || '';
+  if (!html) return "";
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.body.textContent || "";
 }

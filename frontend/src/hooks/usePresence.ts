@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { apiService } from '../services/api.service';
-import { socketService } from '../services/socket.service';
+import { useEffect, useState } from "react";
+import { apiService } from "../services/api.service";
+import { socketService } from "../services/socket.service";
 
 export function usePresence() {
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
@@ -19,7 +19,7 @@ export function usePresence() {
         }
       })
       .catch((err) => {
-        console.warn('Failed to fetch initial online users:', err);
+        console.warn("Failed to fetch initial online users:", err);
       });
 
     // Real-time updates via Socket.io

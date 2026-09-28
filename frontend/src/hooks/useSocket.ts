@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useToast } from '../context/ToastContext';
-import { socketService } from '../services/socket.service';
-import type { ConnectionStatus } from '../types';
+import { useEffect, useState } from "react";
+import { useToast } from "../context/ToastContext";
+import { socketService } from "../services/socket.service";
+import type { ConnectionStatus } from "../types";
 
 export function useSocket() {
   const [status, setStatus] = useState<ConnectionStatus>(socketService.getStatus());
@@ -13,7 +13,7 @@ export function useSocket() {
     });
 
     const unsubError = socketService.onError((err) => {
-      showToast(err.message, 'error');
+      showToast(err.message, "error");
     });
 
     return () => {
@@ -28,9 +28,9 @@ export function useSocket() {
 
   return {
     status,
-    isConnected: status === 'connected',
-    isReconnecting: status === 'reconnecting',
-    isDisconnected: status === 'disconnected',
+    isConnected: status === "connected",
+    isReconnecting: status === "reconnecting",
+    isDisconnected: status === "disconnected",
     reconnect,
   };
 }

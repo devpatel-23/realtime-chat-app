@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ConnectionBanner } from '../components/ConnectionBanner';
 import { Header } from '../components/Header';
 import { MessageInput } from '../components/MessageInput';
-import { MessageList } from '../components/MessageList';
+import { ChatWindow } from '../components/ChatWindow';
 import { Sidebar } from '../components/Sidebar';
 import { TypingIndicator } from '../components/TypingIndicator';
 import { useAuth } from '../context/AuthContext';
@@ -24,10 +24,12 @@ export const ChatPage: React.FC = () => {
   const {
     messages,
     isLoading,
+    hasMore,
     isSending,
     typingUsers,
     sendMessage,
     notifyTyping,
+    loadMoreHistory,
   } = useChat();
 
   if (!username) return null;
@@ -47,9 +49,11 @@ export const ChatPage: React.FC = () => {
         <ConnectionBanner status={connectionStatus} onReconnect={reconnect} />
 
         {/* Message history & bubbles */}
-        <MessageList
+        <ChatWindow
           messages={messages}
           isLoading={isLoading}
+          hasMore={hasMore}
+          onLoadMore={loadMoreHistory}
         />
 
         {/* Typing indicator */}

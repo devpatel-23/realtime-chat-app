@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { ArrowRight, MessageSquare, ShieldCheck, Sparkles, User } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
-import { apiService } from '../services/api.service';
+import React, { useState } from "react";
+import { ArrowRight, MessageSquare, ShieldCheck, Sparkles, User } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { apiService } from "../services/api.service";
 
 export const LoginPage: React.FC = () => {
-  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameInput, setUsernameInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
 
@@ -19,22 +19,22 @@ export const LoginPage: React.FC = () => {
     const trimmed = usernameInput.trim();
 
     if (!trimmed) {
-      setFieldError('Please enter a username');
+      setFieldError("Please enter a username");
       return;
     }
 
     if (trimmed.length < 2) {
-      setFieldError('Username must be at least 2 characters');
+      setFieldError("Username must be at least 2 characters");
       return;
     }
 
     if (trimmed.length > 30) {
-      setFieldError('Username must be 30 characters or less');
+      setFieldError("Username must be 30 characters or less");
       return;
     }
 
     if (!/^[a-zA-Z0-9_\-\s]+$/.test(trimmed)) {
-      setFieldError('Username contains invalid characters');
+      setFieldError("Username contains invalid characters");
       return;
     }
 
@@ -44,10 +44,10 @@ export const LoginPage: React.FC = () => {
       // Validate with backend dummy login endpoint
       const result = await apiService.login(trimmed);
       login(result.username);
-      showToast(`Welcome back, ${result.username}!`, 'success');
+      showToast(`Welcome back, ${result.username}!`, "success");
     } catch (err: any) {
-      setFieldError(err.message || 'Failed to login. Please try again.');
-      showToast(err.message || 'Login failed', 'error');
+      setFieldError(err.message || "Failed to login. Please try again.");
+      showToast(err.message || "Login failed", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -98,8 +98,8 @@ export const LoginPage: React.FC = () => {
                   }}
                   className={`w-full bg-slate-950 border rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition ${
                     fieldError
-                      ? 'border-red-500/80 focus:ring-red-500/30'
-                      : 'border-slate-800 focus:border-indigo-500/80 focus:ring-indigo-500/30'
+                      ? "border-red-500/80 focus:ring-red-500/30"
+                      : "border-slate-800 focus:border-indigo-500/80 focus:ring-indigo-500/30"
                   }`}
                 />
               </div>
@@ -132,7 +132,7 @@ export const LoginPage: React.FC = () => {
               <span>Quick Test Accounts</span>
             </p>
             <div className="flex gap-2">
-              {['Alice', 'Bob', 'Charlie'].map((name) => (
+              {["Alice", "Bob", "Charlie"].map((name) => (
                 <button
                   key={name}
                   type="button"

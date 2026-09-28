@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Search, UserCheck, X } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { getAvatarColor, getInitials } from '../utils/format';
+import React, { useState } from "react";
+import { Search, UserCheck, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { getAvatarColor, getInitials } from "../utils/format";
 
 interface SidebarProps {
   onlineUsers: string[];
@@ -11,7 +11,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ onlineUsers, isOpen, onClose }) => {
   const { username: currentUser } = useAuth();
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const filteredUsers = onlineUsers.filter((u) =>
     u.toLowerCase().includes(search.trim().toLowerCase())
@@ -29,7 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onlineUsers, isOpen, onClose }
 
       <aside
         className={`fixed md:static inset-y-0 left-0 w-72 bg-slate-900/95 border-r border-slate-800/80 flex flex-col z-40 transition-transform duration-200 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         {/* Sidebar Header */}
@@ -75,7 +75,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onlineUsers, isOpen, onClose }
                 <div
                   key={user}
                   className={`flex items-center gap-3 px-3 py-2 rounded-xl transition ${
-                    isSelf ? 'bg-indigo-950/40 border border-indigo-900/30' : 'hover:bg-slate-800/50'
+                    isSelf
+                      ? "bg-indigo-950/40 border border-indigo-900/30"
+                      : "hover:bg-slate-800/50"
                   }`}
                 >
                   <div className="relative">

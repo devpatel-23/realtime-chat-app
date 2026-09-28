@@ -1,7 +1,7 @@
-import Database from 'better-sqlite3';
-import fs from 'node:fs';
-import path from 'node:path';
-import { config } from '../config/index.js';
+import Database from "better-sqlite3";
+import fs from "node:fs";
+import path from "node:path";
+import { config } from "../config/index.js";
 
 let dbInstance: Database.Database | null = null;
 
@@ -12,7 +12,7 @@ export function getDatabase(customPath?: string): Database.Database {
 
   const dbPath = customPath || config.dbPath;
 
-  if (dbPath !== ':memory:') {
+  if (dbPath !== ":memory:") {
     const dir = path.dirname(dbPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -22,11 +22,11 @@ export function getDatabase(customPath?: string): Database.Database {
   const db = new Database(dbPath);
 
   // Enable WAL mode for performance and concurrency if not in-memory
-  if (dbPath !== ':memory:') {
-    db.pragma('journal_mode = WAL');
+  if (dbPath !== ":memory:") {
+    db.pragma("journal_mode = WAL");
   }
-  db.pragma('synchronous = NORMAL');
-  db.pragma('foreign_keys = ON');
+  db.pragma("synchronous = NORMAL");
+  db.pragma("foreign_keys = ON");
 
   initSchema(db);
 

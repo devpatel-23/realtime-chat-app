@@ -1,19 +1,26 @@
-import { io, Socket } from 'socket.io-client';
-import type { ConnectionStatus, Message, PresenceData } from '../types';
+import { io, Socket } from "socket.io-client";
+import type { ConnectionStatus, Message, PresenceData } from "../types";
 
-const SOCKET_SERVER_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000').replace(/\/+$/, '');
+const SOCKET_SERVER_URL = (import.meta.env.VITE_API_URL || "http://localhost:4000").replace(
+  /\/+$/,
+  ""
+);
 
 type StatusChangeCallback = (status: ConnectionStatus) => void;
 type ErrorCallback = (error: { message: string }) => void;
 type MessageCallback = (message: Message) => void;
 type PresenceCallback = (presence: PresenceData) => void;
 type TypingCallback = (data: { username: string }) => void;
-type StatusUpdateCallback = (data: { messageId?: string; ids?: string[]; status: 'delivered' | 'read' }) => void;
+type StatusUpdateCallback = (data: {
+  messageId?: string;
+  ids?: string[];
+  status: "delivered" | "read";
+}) => void;
 
 class SocketService {
   private socket: Socket | null = null;
   private currentUsername: string | null = null;
-  private connectionStatus: ConnectionStatus = 'disconnected';
+  private connectionStatus: ConnectionStatus = "disconnected";
 
   private statusChangeCallbacks: Set<StatusChangeCallback> = new Set();
   private errorCallbacks: Set<ErrorCallback> = new Set();
@@ -34,11 +41,11 @@ class SocketService {
     }
 
     this.currentUsername = username;
-    this.setStatus('connecting');
+    this.setStatus("connecting");
 
     this.socket = io(SOCKET_SERVER_URL, {
       auth: { username },
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
@@ -46,51 +53,57 @@ class SocketService {
       timeout: 10000,
     });
 
-    this.socket.on('connect', () => {
-      this.setStatus('connected');
+    this.socket.on("connect", () => {
+      this.setStatus("connected");
     });
 
-    this.socket.on('disconnect', (reason) => {
-      if (reason === 'io client disconnect') {
-        this.setStatus('disconnected');
+    this.socket.on("disconnect", (reason) => {
+      if (reason === "io client disconnect") {
+        this.setStatus("disconnected");
       } else {
-        this.setStatus('reconnecting');
+        this.setStatus("reconnecting");
       }
     });
 
-    this.socket.on('connect_error', (err) => {
-      console.warn('Socket connect error:', err.message);
-      this.setStatus('reconnecting');
-      this.notifyErrors({ message: err.message || 'Connection to chat server failed' });
+    this.socket.on("connect_error", (err) => {
+      console.warn("Socket connect error:", err.message);
+      this.setStatus("reconnecting");
+      this.notifyErrors({ message: err.message || "Connection to chat server failed" });
     });
 
-    this.socket.on('error', (err: { message: string }) => {
+    this.socket.on("error", (err: { message: string }) => {
       this.notifyErrors(err);
     });
 
-    this.socket.on('presence:update', (data: PresenceData) => {
+    this.socket.on("presence:update", (data: PresenceData) => {
       this.presenceCallbacks.forEach((cb) => cb(data));
     });
 
-    this.socket.on('message:new', (message: Message) => {
+    this.socket.on("message:new", (message: Message) => {
       this.messageCallbacks.forEach((cb) => cb(message));
     });
 
-    this.socket.on('typing:start', (data: { username: string }) => {
+    this.socket.on("typing:start", (data: { username: string }) => {
       this.typingStartCallbacks.forEach((cb) => cb(data));
     });
 
-    this.socket.on('typing:stop', (data: { username: string }) => {
+    this.socket.on("typing:stop", (data: { username: string }) => {
       this.typingStopCallbacks.forEach((cb) => cb(data));
     });
 
-    this.socket.on('message:delivered', (data: { messageId?: string; ids?: string[]; status: 'delivered' }) => {
-      this.deliveredCallbacks.forEach((cb) => cb(data));
-    });
+    this.socket.on(
+      "message:delivered",
+      (data: { messageId?: string; ids?: string[]; status: "delivered" }) => {
+        this.deliveredCallbacks.forEach((cb) => cb(data));
+      }
+    );
 
-    this.socket.on('message:read', (data: { messageId?: string; ids?: string[]; status: 'read' }) => {
-      this.readCallbacks.forEach((cb) => cb(data));
-    });
+    this.socket.on(
+      "message:read",
+      (data: { messageId?: string; ids?: string[]; status: "read" }) => {
+        this.readCallbacks.forEach((cb) => cb(data));
+      }
+    );
   }
 
   public disconnect(): void {
@@ -100,7 +113,7 @@ class SocketService {
       this.socket = null;
     }
     this.currentUsername = null;
-    this.setStatus('disconnected');
+    this.setStatus("disconnected");
   }
 
   public reconnect(): void {
@@ -114,15 +127,15 @@ class SocketService {
   public sendMessage(text: string): Promise<Message> {
     return new Promise((resolve, reject) => {
       if (!this.socket || !this.socket.connected) {
-        reject(new Error('Socket is not connected'));
+        reject(new Error("Socket is not connected"));
         return;
       }
 
-      this.socket.emit('message:new', { text }, (response: any) => {
+      this.socket.emit("message:new", { text }, (response: any) => {
         if (response && response.success) {
           resolve(response.data);
         } else {
-          reject(new Error(response?.error || 'Failed to send message via socket'));
+          reject(new Error(response?.error || "Failed to send message via socket"));
         }
       });
     });
@@ -130,25 +143,25 @@ class SocketService {
 
   public startTyping(): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('typing:start');
+      this.socket.emit("typing:start");
     }
   }
 
   public stopTyping(): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('typing:stop');
+      this.socket.emit("typing:stop");
     }
   }
 
   public markDelivered(messageId: string): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('message:delivered', { messageId });
+      this.socket.emit("message:delivered", { messageId });
     }
   }
 
   public markRead(messageId: string): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('message:read', { messageId });
+      this.socket.emit("message:read", { messageId });
     }
   }
 

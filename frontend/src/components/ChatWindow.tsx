@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState, UIEvent } from 'react';
-import { ArrowDown, MessageSquareDashed } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import type { Message } from '../types';
-import { MessageBubble } from './MessageBubble';
+import React, { useEffect, useRef, useState, UIEvent } from "react";
+import { ArrowDown, MessageSquareDashed } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import type { Message } from "../types";
+import { MessageBubble } from "./MessageBubble";
 
 interface ChatWindowProps {
   messages: Message[];
@@ -26,7 +26,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   // Auto-scroll on new message if user is near bottom
   useEffect(() => {
     if (isNearBottomRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
@@ -44,7 +44,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   const scrollToBottom = () => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     setShowScrollBottom(false);
   };
 
@@ -54,11 +54,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'} animate-pulse`}
+            className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"} animate-pulse`}
           >
             <div
               className={`h-12 rounded-2xl bg-slate-800 ${
-                i % 2 === 0 ? 'w-48 sm:w-64' : 'w-56 sm:w-72'
+                i % 2 === 0 ? "w-48 sm:w-64" : "w-56 sm:w-72"
               }`}
             />
           </div>
@@ -94,7 +94,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             disabled={isLoading}
             className="text-xs text-indigo-400 hover:text-indigo-300 bg-slate-800/70 border border-slate-700 px-3 py-1 rounded-full transition-all cursor-pointer"
           >
-            {isLoading ? 'Loading older messages...' : 'Load older messages'}
+            {isLoading ? "Loading older messages..." : "Load older messages"}
           </button>
         </div>
       )}

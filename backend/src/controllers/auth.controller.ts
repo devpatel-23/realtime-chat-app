@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { sendSuccess } from '../utils/response.js';
-import { validateUsername } from '../utils/sanitize.js';
+import { Request, Response, NextFunction } from "express";
+import { sendSuccess } from "../utils/response.js";
+import { validateUsername } from "../utils/sanitize.js";
 
 export class AuthController {
   public static login(req: Request, res: Response, next: NextFunction): void {
@@ -10,7 +10,7 @@ export class AuthController {
 
       sendSuccess(res, {
         username: validUsername,
-        message: 'Login successful'
+        message: "Login successful",
       });
     } catch (err) {
       next(err);

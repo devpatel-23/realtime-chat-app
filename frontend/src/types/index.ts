@@ -1,4 +1,4 @@
-export type MessageStatus = 'sent' | 'delivered' | 'read';
+export type MessageStatus = "sent" | "delivered" | "read";
 
 export interface Message {
   id: string;
@@ -8,7 +8,7 @@ export interface Message {
   status: MessageStatus;
 }
 
-export type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
+export type ConnectionStatus = "connected" | "connecting" | "reconnecting" | "disconnected";
 
 export interface PresenceData {
   users: string[];
@@ -17,7 +17,7 @@ export interface PresenceData {
 
 export interface ToastMessage {
   id: string;
-  type: 'error' | 'warning' | 'info' | 'success';
+  type: "error" | "warning" | "info" | "success";
   message: string;
 }
 

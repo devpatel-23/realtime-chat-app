@@ -1,8 +1,8 @@
-import React from 'react';
-import { LogOut, Menu, MessageCircle, Users, Wifi, WifiOff } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import type { ConnectionStatus } from '../types';
-import { getAvatarColor, getInitials } from '../utils/format';
+import React from "react";
+import { LogOut, Menu, MessageCircle, Users, Wifi, WifiOff } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import type { ConnectionStatus } from "../types";
+import { getAvatarColor, getInitials } from "../utils/format";
 
 export interface HeaderProps {
   onlineCount: number;
@@ -17,10 +17,10 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleSidebar,
 }) => {
   const { username, logout } = useAuth();
-  const currentUsername = username || 'Guest';
+  const currentUsername = username || "Guest";
 
-  const isConnected = connectionStatus === 'connected';
-  const isReconnecting = connectionStatus === 'reconnecting' || connectionStatus === 'connecting';
+  const isConnected = connectionStatus === "connected";
+  const isReconnecting = connectionStatus === "reconnecting" || connectionStatus === "connecting";
 
   return (
     <header className="h-16 px-4 sm:px-6 bg-slate-900 border-b border-slate-800 flex items-center justify-between z-20 shrink-0">
@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center gap-1.5 text-xs text-slate-400">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>
-                {onlineCount} {onlineCount === 1 ? 'user' : 'users'} online
+                {onlineCount} {onlineCount === 1 ? "user" : "users"} online
               </span>
             </div>
           </div>
@@ -56,10 +56,10 @@ export const Header: React.FC<HeaderProps> = ({
         <div
           className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors ${
             isConnected
-              ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
               : isReconnecting
-              ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-              : 'bg-red-500/10 text-red-300 border-red-500/30'
+                ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                : "bg-red-500/10 text-red-300 border-red-500/30"
           }`}
           title={`Status: ${connectionStatus}`}
         >

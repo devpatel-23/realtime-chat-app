@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { SendHorizontal } from 'lucide-react';
+import React, { useRef, useState } from "react";
+import { SendHorizontal } from "lucide-react";
 
 interface MessageInputProps {
   onSendMessage: (text: string) => void;
@@ -14,7 +14,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   isSending,
   disabled,
 }) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = (e?: React.FormEvent) => {
@@ -24,12 +24,12 @@ export const MessageInput: React.FC<MessageInputProps> = ({
     if (!trimmed || isSending || disabled) return;
 
     onSendMessage(trimmed);
-    setText('');
+    setText("");
     inputRef.current?.focus();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
@@ -60,7 +60,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
         {text.length > 800 && (
           <span
             className={`absolute right-3 bottom-2 text-[10px] font-mono ${
-              text.length >= 1000 ? 'text-red-400 font-bold' : 'text-slate-400'
+              text.length >= 1000 ? "text-red-400 font-bold" : "text-slate-400"
             }`}
           >
             {1000 - text.length}

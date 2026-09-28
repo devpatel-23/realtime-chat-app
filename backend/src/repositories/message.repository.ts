@@ -1,7 +1,7 @@
-import type Database from 'better-sqlite3';
-import { getDatabase } from '../db/index.js';
+import type Database from "better-sqlite3";
+import { getDatabase } from "../db/index.js";
 
-export type MessageStatus = 'sent' | 'delivered' | 'read';
+export type MessageStatus = "sent" | "delivered" | "read";
 
 export interface Message {
   id: string;
@@ -90,7 +90,7 @@ export class SQLiteMessageRepository implements IMessageRepository {
 
   updateStatusBulk(ids: string[], status: MessageStatus): number {
     if (ids.length === 0) return 0;
-    const placeholders = ids.map(() => '?').join(',');
+    const placeholders = ids.map(() => "?").join(",");
     const stmt = this.db.prepare(`
       UPDATE messages
       SET status = ?

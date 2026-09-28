@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { messageService } from '../services/message.service.js';
-import { sendSuccess } from '../utils/response.js';
-import { broadcastMessage } from '../sockets/index.js';
+import { Request, Response, NextFunction } from "express";
+import { messageService } from "../services/message.service.js";
+import { sendSuccess } from "../utils/response.js";
+import { broadcastMessage } from "../sockets/index.js";
 
 export class MessageController {
   public static create(req: Request, res: Response, next: NextFunction): void {

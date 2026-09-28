@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
-import { apiService } from '../services/api.service';
-import { socketService } from '../services/socket.service';
-import type { Message, MessageStatus } from '../types';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import { apiService } from "../services/api.service";
+import { socketService } from "../services/socket.service";
+import type { Message, MessageStatus } from "../types";
 
 export function useChat() {
   const { username } = useAuth();
@@ -36,7 +36,7 @@ export function useChat() {
           // Mark incoming unread messages as read
           if (username) {
             history.forEach((msg) => {
-              if (msg.username !== username && msg.status !== 'read') {
+              if (msg.username !== username && msg.status !== "read") {
                 socketService.markRead(msg.id);
               }
             });
@@ -46,7 +46,7 @@ export function useChat() {
       .catch((err) => {
         if (mounted) {
           setIsLoading(false);
-          showToast(err.message || 'Failed to load message history', 'error');
+          showToast(err.message || "Failed to load message history", "error");
         }
       });
 
@@ -82,8 +82,8 @@ export function useChat() {
       const targetIds = new Set(data.ids || (data.messageId ? [data.messageId] : []));
       setMessages((prev) =>
         prev.map((msg) => {
-          if (targetIds.has(msg.id) && msg.status === 'sent') {
-            return { ...msg, status: 'delivered' as MessageStatus };
+          if (targetIds.has(msg.id) && msg.status === "sent") {
+            return { ...msg, status: "delivered" as MessageStatus };
           }
           return msg;
         })
@@ -96,7 +96,7 @@ export function useChat() {
       setMessages((prev) =>
         prev.map((msg) => {
           if (targetIds.has(msg.id)) {
-            return { ...msg, status: 'read' as MessageStatus };
+            return { ...msg, status: "read" as MessageStatus };
           }
           return msg;
         })
@@ -161,7 +161,7 @@ export function useChat() {
       setIsSending(true);
 
       try {
-        if (socketService.getStatus() === 'connected') {
+        if (socketService.getStatus() === "connected") {
           await socketService.sendMessage(trimmed);
         } else {
           const fallbackMsg = await apiService.sendMessage(username, trimmed);
@@ -179,7 +179,7 @@ export function useChat() {
             return [...prev, fallbackMsg];
           });
         } catch (restErr: any) {
-          showToast(restErr.message || 'Failed to send message', 'error');
+          showToast(restErr.message || "Failed to send message", "error");
         }
       } finally {
         setIsSending(false);
@@ -199,7 +199,7 @@ export function useChat() {
       }
       setMessages((prev) => [...olderMessages, ...prev]);
     } catch (err: any) {
-      showToast(err.message || 'Failed to load older messages', 'error');
+      showToast(err.message || "Failed to load older messages", "error");
     }
   }, [messages, hasMore, isLoading, showToast]);
 
