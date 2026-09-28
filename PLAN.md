@@ -1,82 +1,97 @@
 # Execution Plan: Real-time Chat Web Application
 
 ## Overview
-This document outlines the step-by-step engineering plan for building, verifying, and documenting a production-grade Real-time Chat Web Application.
+This plan defines the step-by-step implementation and verification strategy for the Real-time Chat Web Application with Node.js/Express/Socket.io backend, SQLite persistence, and React + Vite + TypeScript frontend.
 
 ---
 
-## 1. Project Initialization & Architecture Setup
-- **Root Setup**:
-  - Root `package.json` with workspaces or root orchestration (`concurrently`, test runner, build scripts).
-  - Git repository initialization and commit hygiene.
-- **Backend Setup (`/backend`)**:
-  - TypeScript, ESM (`"type": "module"`), Node.js, Express, Socket.io.
-  - SQLite database layer using a clean Repository pattern (`IMessageRepository`). Test `better-sqlite3`, fallback gracefully to `node:sqlite` or `sqlite3` if native compilation issues occur on Node 26.
-  - Standardized REST response wrapper `{ success: boolean, data?: any, error?: string | object }`.
-  - Centralized error handler and validation middleware.
-  - REST endpoints:
-    - `POST /api/login`: Username-based dummy auth.
-    - `POST /api/messages`: Validate, persist, broadcast message.
-    - `GET /api/messages?limit=&before=`: Cursor/pagination history, returned oldest-to-newest.
-    - `GET /api/users/online`: Current active online users list and count.
-    - `GET /health`: Health and uptime check.
-  - Socket.io Server:
-    - Handshake authentication by username.
-    - Multi-tab presence tracking (connection counting per username).
-    - Events: `message:new`, `typing:start`, `typing:stop`, `presence:update`, `message:delivered`, `message:read`, `error`.
-    - Disconnect cleanup and typing reset.
-  - Tests: Vitest / Supertest for REST endpoints.
-  - Config: Dotenv configuration with defaults (`PORT=4000`, `CLIENT_ORIGIN=http://localhost:5173`, `DB_PATH=./data/chat.db`).
-  - Dockerfile & `.env.example`.
-- **Frontend Setup (`/frontend`)**:
-  - Vite + React + TypeScript + Tailwind CSS for a modern, responsive, polished UI.
-  - Architecture:
-    - Services: `socket.service.ts` (singleton), `api.service.ts`.
-    - Context: `AuthContext` (stores user in `localStorage`).
-    - Hooks: `useSocket`, `usePresence`, `useChat`.
-    - Components: Header with connection status banner, Sidebar with online users, ChatWindow, MessageBubble (differentiated own vs. others, status ticks, timestamps), MessageInput (Enter-to-send, typing debounce), TypingIndicator, Toast alerts.
-    - Pages: `LoginPage` and `ChatPage`.
-    - Empty and loading states, auto-scroll with manual override.
-  - Config: `.env.example`, Vite config with proxy/env vars.
+## Phase 1: Project Scaffolding & Root Configuration
+1. Initialize root `package.json` with scripts:
+   - `npm run dev`: concurrent execution of backend and frontend.
+   - `npm run test`: execute backend and frontend test suites.
+   - `npm run build`: compile backend TypeScript and build Vite production bundle.
+2. Initialize backend directory structure:
+   - `backend/src/{config,routes,controllers,services,repositories,sockets,middleware,db,utils}`
+   - `backend/tests`
+   - `backend/.env.example`
+   - `backend/Dockerfile`
+3. Initialize frontend directory structure:
+   - `frontend/src/{pages,components,hooks,services,context,utils,types}`
+   - `frontend/.env.example`
+4. Setup ESLint and Prettier across workspaces.
 
 ---
 
-## 2. Implementation Steps
-1. **Root & Backend Scaffolding**:
-   - Create directories and dependencies.
-   - Verify SQLite setup.
-   - Implement database schema, repository, service, controllers, routes, middleware, and socket handlers.
-   - Write automated unit and integration tests (Vitest + Supertest).
-2. **Frontend Implementation**:
-   - Scaffold Vite React TS app.
-   - Configure Tailwind CSS.
-   - Implement API & Socket client services, Contexts, Hooks, and UI components.
-   - Build login flow and real-time chat interface with delivery/read ticks, typing indicators, and presence updates.
-3. **Deployment Assets**:
-   - `render.yaml` configuration.
-   - `backend/Dockerfile` multi-stage build.
+## Phase 2: Backend Development (Node.js + Express + Socket.io + SQLite)
+1. **Database & Repository Layer**:
+   - SQLite initialization via `better-sqlite3` (with fallback to `node:sqlite` or `sqlite3` if native build fails on Node 26).
+   - `IMessageRepository` interface and SQLite implementation (`SQLiteMessageRepository`).
+   - SQLite schema migration for `messages`: `id`, `username`, `text`, `createdAt`, `status` (`sent` | `delivered` | `read`).
+2. **Services**:
+   - `MessageService`: sanitization, length/content validation, persistence, status updates.
+   - `PresenceService`: multi-tab connection tracking (`Map<username, Set<socketId>>`), online status querying.
+   - `TypingService`: in-memory debounce/expiry tracking for typing users.
+3. **REST API**:
+   - Centralized JSON responses: `{ success: true, data: ... }` / `{ success: false, error: ... }`.
+   - `POST /api/login`: dummy username login validation.
+   - `POST /api/messages`: post message, persist, broadcast via Socket.io.
+   - `GET /api/messages?limit=&before=`: paginated history (oldest to newest).
+   - `GET /api/users/online`: active online usernames list.
+   - `GET /health`: system health check.
+   - Centralized error handling and CORS middleware.
+4. **Socket.io Layer**:
+   - Handshake authentication by username.
+   - Event handlers with try/catch emitting `error` event on failures:
+     - `message:new`: broadcast message to all clients.
+     - `typing:start` and `typing:stop`: notify other users.
+     - `presence:update`: multi-tab safe user presence broadcast.
+     - `message:delivered` and `message:read`: update persistence and notify participants.
+     - `disconnect`: remove socket, update presence, clear typing state.
+5. **Testing**:
+   - Automated integration tests with Vitest & Supertest for all REST endpoints and error cases.
 
 ---
 
-## 3. Comprehensive Verification
-1. **REST Verification**:
-   - Start backend server and curl all endpoints (`/health`, `/api/login`, `/api/messages`, `/api/users/online`).
-   - Run Vitest suite for automated validation.
-2. **Socket.io Flow Verification**:
-   - Create a standalone Node script with two concurrent Socket.io client instances.
-   - Test login handshake, presence updates, bidirectional messaging, typing indicators, and delivered/read receipts.
-3. **Frontend Build & Types**:
-   - Run `tsc --noEmit` and `npm run build` in `/frontend`.
-4. **End-to-End Headless Browser Verification (Playwright)**:
-   - Install Playwright & Chromium.
-   - Launch two browser contexts (User A and User B).
-   - Test simultaneous login, message exchange, typing indicator display, presence badge updates, and message persistence after browser reload.
-   - Capture screenshot artifacts in `/docs/screenshots`.
+## Phase 3: Frontend Development (React + Vite + TypeScript + Tailwind)
+1. **Design System & Styling**:
+   - Responsive, modern Tailwind CSS layout.
+   - Clean dark/light neutral palette, chat bubbles, avatar indicators, connection banner, and toast alerts.
+2. **State & Architecture**:
+   - `AuthContext`: handles login, localStorage persistence, logout.
+   - `SocketService`: singleton connection lifecycle manager.
+   - `ApiService`: centralized HTTP client.
+   - Hooks: `useSocket`, `useChat`, `usePresence`.
+3. **Components**:
+   - `LoginPage`: username input, form validation, submit action.
+   - `ChatPage`:
+     - Header with online user counter & connection status indicator.
+     - Disconnected / Reconnecting banner.
+     - Online users sidebar with active indicators.
+     - Message list with auto-scroll, empty state, and loading skeletons.
+     - Message bubbles (own vs others) with sender name, formatted timestamps ("10:42 AM"), delivered/read tick marks.
+     - Typing indicator with animated dots ("Alice is typing...").
+     - Message input with Enter-to-send and send button.
+     - Error toast notifications for REST and Socket errors.
 
 ---
 
-## 4. Documentation & Final Delivery
-- Write comprehensive `README.md` including Mermaid diagrams, setup, API & socket specs, deployment instructions, assumptions, and known limitations.
-- Write `/docs/SCREEN_RECORDING_GUIDE.md`.
-- Write `FINAL_REPORT.md` summarizing build, verification, results, and next steps.
-- Ensure all servers are stopped and git commits are clean.
+## Phase 4: Verification & Real Runs
+1. Start backend server and test every REST endpoint with `curl`.
+2. Execute Node.js automated Socket.io client script simulating two simultaneous users (Presence, Typing, Messaging, Delivery/Read ticks).
+3. Run frontend TypeScript checks (`npx tsc --noEmit`) and production build (`npm run build`).
+4. Execute headless Playwright test with two browser contexts:
+   - User A and User B log in.
+   - Exchange messages in real-time.
+   - Verify typing indicators and presence.
+   - Verify delivery and read status.
+   - Refresh browser and verify history persistence and timestamps.
+   - Capture screenshots in `/docs/screenshots/`.
+5. Stop background test servers.
+
+---
+
+## Phase 5: Documentation & Artifacts
+1. `render.yaml` and `backend/Dockerfile`.
+2. `/docs/SCREEN_RECORDING_GUIDE.md`: step-by-step instructions for demonstrating all features.
+3. `README.md`: comprehensive documentation with Mermaid architecture diagram, API documentation, Socket events, and deployment guides.
+4. `FINAL_REPORT.md`: thorough summary of accomplishments, test verification results, limitations, and manual next steps.
