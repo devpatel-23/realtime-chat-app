@@ -8,7 +8,7 @@ export interface Message {
   status: MessageStatus;
 }
 
-export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected';
+export type ConnectionStatus = 'connected' | 'connecting' | 'reconnecting' | 'disconnected';
 
 export interface PresenceData {
   users: string[];

@@ -11,6 +11,7 @@ export function useChat() {
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const [isSending, setIsSending] = useState<boolean>(false);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
@@ -27,6 +28,9 @@ export function useChat() {
       .then((history) => {
         if (mounted) {
           setMessages(history);
+          if (history.length < 50) {
+            setHasMore(false);
+          }
           setIsLoading(false);
 
           // Mark incoming unread messages as read
@@ -57,18 +61,19 @@ export function useChat() {
     const unsubMsg = socketService.onMessage((newMsg) => {
       setMessages((prev) => {
         if (prev.some((m) => m.id === newMsg.id)) {
-          return prev;
+          return prev.map((m) => (m.id === newMsg.id ? newMsg : m));
         }
         return [...prev, newMsg];
       });
 
+      // Clear typing indicator for sender
+      setTypingUsers((prev) => prev.filter((u) => u !== newMsg.username));
+
       // If the message is from someone else, notify delivery and read
       if (username && newMsg.username !== username) {
         socketService.markDelivered(newMsg.id);
-        // If tab is active, mark read immediately
-        if (!document.hidden) {
-          socketService.markRead(newMsg.id);
-        }
+        // Mark read immediately since user is on the chat view
+        socketService.markRead(newMsg.id);
       }
     });
 
@@ -156,10 +161,17 @@ export function useChat() {
       setIsSending(true);
 
       try {
-        // Try socket emission first for instant bidirectional responsiveness
-        await socketService.sendMessage(trimmed);
+        if (socketService.getStatus() === 'connected') {
+          await socketService.sendMessage(trimmed);
+        } else {
+          const fallbackMsg = await apiService.sendMessage(username, trimmed);
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === fallbackMsg.id)) return prev;
+            return [...prev, fallbackMsg];
+          });
+        }
       } catch (err: any) {
-        // Fall back to REST if socket failed
+        // Fall back to REST if socket emission failed
         try {
           const fallbackMsg = await apiService.sendMessage(username, trimmed);
           setMessages((prev) => {
@@ -176,13 +188,30 @@ export function useChat() {
     [username, stopTypingImmediate, showToast]
   );
 
+  const loadMoreHistory = useCallback(async () => {
+    if (messages.length === 0 || !hasMore || isLoading) return;
+    const oldestTimestamp = messages[0].createdAt;
+
+    try {
+      const olderMessages = await apiService.getMessages(30, oldestTimestamp);
+      if (olderMessages.length < 30) {
+        setHasMore(false);
+      }
+      setMessages((prev) => [...olderMessages, ...prev]);
+    } catch (err: any) {
+      showToast(err.message || 'Failed to load older messages', 'error');
+    }
+  }, [messages, hasMore, isLoading, showToast]);
+
   return {
     messages,
     isLoading,
+    hasMore,
     isSending,
     typingUsers,
     sendMessage,
     notifyTyping,
     stopTypingImmediate,
+    loadMoreHistory,
   };
 }

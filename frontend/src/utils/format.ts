@@ -1,7 +1,7 @@
 /**
  * Formats ISO timestamp string to friendly time e.g. "10:42 AM"
  */
-export function formatTimestamp(isoString: string): string {
+export function formatTime(isoString: string): string {
   try {
     const date = new Date(isoString);
     if (isNaN(date.getTime())) {
@@ -17,6 +17,8 @@ export function formatTimestamp(isoString: string): string {
     return '';
   }
 }
+
+export const formatTimestamp = formatTime;
 
 /**
  * Returns consistent deterministic background color for an avatar based on username
@@ -54,4 +56,13 @@ export function getInitials(username: string): string {
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
   return username.slice(0, 2).toUpperCase();
+}
+
+/**
+ * Decodes HTML entities for safe display
+ */
+export function decodeHtml(html: string): string {
+  if (!html) return '';
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  return doc.body.textContent || '';
 }

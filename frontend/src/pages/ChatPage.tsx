@@ -5,16 +5,22 @@ import { MessageInput } from '../components/MessageInput';
 import { MessageList } from '../components/MessageList';
 import { Sidebar } from '../components/Sidebar';
 import { TypingIndicator } from '../components/TypingIndicator';
+import { useAuth } from '../context/AuthContext';
 import { useChat } from '../hooks/useChat';
 import { usePresence } from '../hooks/usePresence';
 import { useSocket } from '../hooks/useSocket';
 
 export const ChatPage: React.FC = () => {
+  const { username } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Consolidated custom hooks separating business logic from UI
-  const { status, reconnect, isDisconnected } = useSocket();
+  // Hook 1: Socket lifecycle and connection status banner
+  const { status: connectionStatus, reconnect } = useSocket();
+
+  // Hook 2: Presence tracking
   const { onlineUsers, onlineCount } = usePresence();
+
+  // Hook 3: Real-time & persistent chat
   const {
     messages,
     isLoading,
@@ -24,45 +30,46 @@ export const ChatPage: React.FC = () => {
     notifyTyping,
   } = useChat();
 
+  if (!username) return null;
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-slate-950 text-slate-100 overflow-hidden">
-      {/* Top Application Header */}
-      <Header
-        onlineCount={onlineCount}
-        connectionStatus={status}
-        onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
-        isSidebarOpen={isSidebarOpen}
-      />
-
-      {/* Degradation / Reconnection Status Banner */}
-      <ConnectionBanner status={status} onReconnect={reconnect} />
-
-      {/* Main Content Area: Sidebar + Chat Stream */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Online Members Sidebar */}
-        <Sidebar
-          onlineUsers={onlineUsers}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans">
+      {/* Main chat interface */}
+      <div className="flex-1 flex flex-col h-full min-w-0">
+        {/* Header with status and count */}
+        <Header
+          onlineCount={onlineCount}
+          connectionStatus={connectionStatus}
+          onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
         />
 
-        {/* Chat Conversation Area */}
-        <main className="flex-1 flex flex-col bg-slate-950/60 overflow-hidden relative">
-          {/* Scrollable Message List */}
-          <MessageList messages={messages} isLoading={isLoading} />
+        {/* Offline / Reconnecting Banner */}
+        <ConnectionBanner status={connectionStatus} onReconnect={reconnect} />
 
-          {/* Typing Indicator */}
-          <TypingIndicator typingUsers={typingUsers} />
+        {/* Message history & bubbles */}
+        <MessageList
+          messages={messages}
+          isLoading={isLoading}
+        />
 
-          {/* Message Input Box */}
-          <MessageInput
-            onSendMessage={sendMessage}
-            onTyping={notifyTyping}
-            isSending={isSending}
-            disabled={isDisconnected}
-          />
-        </main>
+        {/* Typing indicator */}
+        <TypingIndicator typingUsers={typingUsers} />
+
+        {/* Message Input bar */}
+        <MessageInput
+          onSendMessage={sendMessage}
+          onTyping={notifyTyping}
+          isSending={isSending}
+          disabled={connectionStatus === 'disconnected'}
+        />
       </div>
+
+      {/* Responsive online users sidebar */}
+      <Sidebar
+        onlineUsers={onlineUsers}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
     </div>
   );
 };
